@@ -1,0 +1,18 @@
+{
+    "name": "hab/ntriples",
+    "description": "A simple library for publishing data encoded as N-Triples",
+    "keywords": ["semantic web", "rdf", "n-triples", "ntriples", "lod", "linked open data"],
+    "license": "GPL-3.0+",
+    "authors": [
+        {
+            "name": "David Maus",
+            "email": "maus@hab.de",
+            "role": "developer"
+        }
+    ],
+    "autoload": {
+        "psr-0": {
+            "HAB": "src/"
+        }
+    }
+}
