@@ -39,16 +39,19 @@ class NTriples implements SerializerInterface
     /**
      * {@inheritDoc}
      */
-    public function serialize (Graph $graph)
+    public function serialize ()
     {
+        $graphs = func_get_args();
         $buffer = array();
-        foreach ($graph as $triple) {
-            list($s, $p, $o) = $triple;
-            $s = $this->pattern($s);
-            $p = $this->pattern($p);
-            $o = $this->pattern($o);
-            if ($s and $p and $o) {
-                $buffer []= $s . ' ' . $p . ' ' . $o . ' .';
+        foreach ($graphs as $graph) {
+            foreach ($graph as $triple) {
+                list($s, $p, $o) = $triple;
+                $s = $this->pattern($s);
+                $p = $this->pattern($p);
+                $o = $this->pattern($o);
+                if ($s and $p and $o) {
+                    $buffer []= $s . ' ' . $p . ' ' . $o . ' .';
+                }
             }
         }
         return implode(PHP_EOL, $buffer);

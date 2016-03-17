@@ -35,11 +35,11 @@ use HAB\NTriples\Graph;
 interface SerializerInterface
 {
     /**
-     * Return serialized graph.
+     * Return serialized graph or graphs.
      *
-     * @param  Graph $graph
+     * @param  Graph[] $graph
      * @return mixed
      */
-    public function serialize (Graph $graph);
+    public function serialize ();
 
 }

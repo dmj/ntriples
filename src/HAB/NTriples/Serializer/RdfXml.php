@@ -36,7 +36,7 @@ use DOMDocument;
  * @copyright (c) 2015 by Herzog August Bibliothek Wolfenbüttel
  * @license   http://www.gnu.org/licenses/gpl.txt GNU General Public License v3 or higher
  */
-class RdfXml
+class RdfXml implements SerializerInterface
 {
     /**
      * Map URIs to abbreviations.
@@ -69,9 +69,10 @@ class RdfXml
     /**
      * {@inheritDoc}
      */
-    public function serialize (Graph $graph)
+    public function serialize ()
     {
-        $this->createPredicateAbbreviationMaps($graph);
+        $graphs = func_get_args();
+        $this->createPredicateAbbreviationMaps($graphs);
         
         $nsDecls = array();
         foreach ($this->namespaceDeclMap as $namespace => $prefix) {
@@ -79,29 +80,31 @@ class RdfXml
         }
         
         $buffer   = array(sprintf('<rdf:RDF %s>', implode(' ', $nsDecls)));
-        foreach ($graph->subjects() as $subject) {
-            $buffer []= sprintf('<rdf:Description rdf:%s="%s">', ($subject instanceof BNode) ? 'nodeID' : 'about', htmlspecialchars($subject, ENT_QUOTES|ENT_XML1));
-            foreach ($graph->properties($subject) as $predicate => $values) {
-                if (array_key_exists($predicate, $this->uriAbbreviationMap)) {
-                    list($namespace, $localname) = $this->uriAbbreviationMap[$predicate];
-                    $qname = $this->namespaceDeclMap[$namespace] . ':' . $localname;
-                    foreach ($values as $value) {
-                        if ($value instanceof BNode) {
-                            $buffer []= sprintf('<%s rdf:nodeID="%s"/>', $qname, $value);
-                        } else if ($value instanceof Literal) {
-                            if ($language = $value->getLanguage()) {
-                                $attr = sprintf('xml:lang="%s"', htmlspecialchars($language, ENT_QUOTES|ENT_XML1));
-                            } else if ($datatype = $value->getDatatype()) {
-                                $attr = sprintf('rdf:datatype="%s"', htmlspecialchars($datatype, ENT_QUOTES|ENT_XML1));
+        foreach ($graphs as $graph) {
+            foreach ($graph->subjects() as $subject) {
+                $buffer []= sprintf('<rdf:Description rdf:%s="%s">', ($subject instanceof BNode) ? 'nodeID' : 'about', htmlspecialchars($subject, ENT_QUOTES|ENT_XML1));
+                foreach ($graph->properties($subject) as $predicate => $values) {
+                    if (array_key_exists($predicate, $this->uriAbbreviationMap)) {
+                        list($namespace, $localname) = $this->uriAbbreviationMap[$predicate];
+                        $qname = $this->namespaceDeclMap[$namespace] . ':' . $localname;
+                        foreach ($values as $value) {
+                            if ($value instanceof BNode) {
+                                $buffer []= sprintf('<%s rdf:nodeID="%s"/>', $qname, $value);
+                            } else if ($value instanceof Literal) {
+                                if ($language = $value->getLanguage()) {
+                                    $attr = sprintf('xml:lang="%s"', htmlspecialchars($language, ENT_QUOTES|ENT_XML1));
+                                } else if ($datatype = $value->getDatatype()) {
+                                    $attr = sprintf('rdf:datatype="%s"', htmlspecialchars($datatype, ENT_QUOTES|ENT_XML1));
+                                }
+                                $buffer []= sprintf('<%s %s>%s</%s>', $qname, $attr, htmlspecialchars($value, ENT_QUOTES|ENT_XML1), $qname);
+                            } else {
+                                $buffer []= sprintf('<%s rdf:resource="%s"/>', $qname, htmlspecialchars($value, ENT_QUOTES|ENT_XML1));
                             }
-                            $buffer []= sprintf('<%s %s>%s</%s>', $qname, $attr, htmlspecialchars($value, ENT_QUOTES|ENT_XML1), $qname);
-                        } else {
-                            $buffer []= sprintf('<%s rdf:resource="%s"/>', $qname, htmlspecialchars($value, ENT_QUOTES|ENT_XML1));
                         }
                     }
                 }
+                $buffer []= '</rdf:Description>';
             }
-            $buffer []= '</rdf:Description>';
         }
         $buffer []= '</rdf:RDF>';
         return implode(PHP_EOL, $buffer);
@@ -129,24 +132,26 @@ class RdfXml
      *
      * @todo   Maybe factor out into separate class
      *
-     * @param  Graph $graph
+     * @param  Graph[] $graphs
      * @return void
      */
-    private function createPredicateAbbreviationMaps (Graph $graph)
+    private function createPredicateAbbreviationMaps (array $graphs)
     {
         $this->namespaceDeclMap = $this->namespaceDeclMapDefault;
-        foreach ($graph as $triple) {
-            $predicate = $triple[1];
-            if (!array_key_exists($predicate, $this->uriAbbreviationMap)) {
-                $abbreviation = $this->abbreviate($predicate);
-                if (!empty($abbreviation)) {
-                    list($namespace, $localname) = $abbreviation;
-                    if (!array_key_exists($namespace, $this->namespaceDeclMap)) {
-                        $this->namespaceDeclMap[$namespace] = sprintf('ns%d', $this->namespaceDeclCount++);
+        foreach ($graphs as $graph) {
+            foreach ($graph as $triple) {
+                $predicate = $triple[1];
+                if (!array_key_exists($predicate, $this->uriAbbreviationMap)) {
+                    $abbreviation = $this->abbreviate($predicate);
+                    if (!empty($abbreviation)) {
+                        list($namespace, $localname) = $abbreviation;
+                        if (!array_key_exists($namespace, $this->namespaceDeclMap)) {
+                            $this->namespaceDeclMap[$namespace] = sprintf('ns%d', $this->namespaceDeclCount++);
+                        }
+                        $this->uriAbbreviationMap[$predicate] = $abbreviation;
+                    } else {
+                        @trigger_error(sprintf('Unable to split URI <%s> into namespace and localname', $predicate), E_USER_WARNING);
                     }
-                    $this->uriAbbreviationMap[$predicate] = $abbreviation;
-                } else {
-                    @trigger_error(sprintf('Unable to split URI <%s> into namespace and localname', $predicate), E_USER_WARNING);
                 }
             }
         }
