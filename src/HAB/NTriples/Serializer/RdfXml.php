@@ -27,8 +27,6 @@ use HAB\NTriples\Graph;
 use HAB\NTriples\BNode;
 use HAB\NTriples\Literal;
 
-use DOMDocument;
-
 /**
  * Serialize graph as RDF/XML document.
  *
