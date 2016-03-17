@@ -65,6 +65,24 @@ class Graph implements Countable, IteratorAggregate
     private $subjectKeyCounter = 0;
 
     /**
+     * Graph name.
+     *
+     * @var string
+     */
+    private $name;
+
+    /**
+     * Constructor.
+     *
+     * @param  string $name
+     * @return void
+     */
+    public function __construct ($name = null)
+    {
+        $this->setName($name);
+    }
+
+    /**
      * Add a triple.
      *
      * @param  string|BNode         $subject
@@ -131,15 +149,37 @@ class Graph implements Countable, IteratorAggregate
      * Return new graph containing selected triples.
      *
      * @param  callable $selector
+     * @param  string   $name
      * @return Graph
      */
-    public function select ($selector)
+    public function select ($selector, $name = null)
     {
-        $graph = new Graph();
+        $graph = new Graph($name);
         foreach (array_filter($this->triples, $selector) as $triple) {
             call_user_func_array(array($graph, 'add'), $triple);
         }
         return $graph;
+    }
+
+    /**
+     * Set graph name.
+     *
+     * @param  string $name
+     * @return void
+     */
+    public function setName ($name)
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * Return graph name.
+     *
+     * @return string|null
+     */
+    public function getName ()
+    {
+        return $this->name;
     }
 
     /**
