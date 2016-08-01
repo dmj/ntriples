@@ -36,7 +36,7 @@ use HAB\NTriples\Graph;
  * @copyright (c) 2016 by Herzog August Bibliothek Wolfenbüttel
  * @license   http://www.gnu.org/licenses/gpl.txt GNU General Public License v3 or higher
  */
-class TriX implements SerializerInterface
+class TriX implements SerializerInterface, TripleSerializerInterface
 {
     /**
      * {@inheritDoc}
@@ -52,16 +52,28 @@ class TriX implements SerializerInterface
                 $buffer []= $this->pattern($name);
             }
             foreach ($graph as $triple) {
-                $buffer []= '<triple>';
-                foreach ($triple as $token) {
-                    $buffer []= $this->pattern($token);
+                $triple = call_user_func_array(array($this, 'serializeTriple'), $triple);
+                if ($triple) {
+                    $buffer []= $triple;
                 }
-                $buffer []= '</triple>';
             }
             $buffer []= '</graph>';
         }
         $buffer []= '</TriX>';
         return implode(PHP_EOL, $buffer);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function serializeTriple ($s, $p, $o)
+    {
+        $s = $this->pattern($s);
+        $p = $this->pattern($s);
+        $o = $this->pattern($s);
+        if ($s and $p and $o) {
+            return '<triple>' . $s . $p . $o . '</triple>';
+        }
     }
 
     /**
