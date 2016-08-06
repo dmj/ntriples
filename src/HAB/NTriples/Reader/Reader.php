@@ -26,6 +26,8 @@ namespace HAB\NTriples\Reader;
 use HAB\NTriples\Literal;
 use HAB\NTriples\BNode;
 
+use RuntimeException;
+
 /**
  * NTriples reader.
  *
@@ -48,8 +50,8 @@ class Reader
      * @var array
      */
     private $bnodes = array();
-       
-    
+
+
     /**
      * Open reader to read from given URI.
      *
@@ -124,6 +126,20 @@ class Reader
     public function close ()
     {
         fclose($this->handle);
+    }
+
+    /**
+     * Rewind input stream.
+     *
+     * @throws RuntimeException Cannot rewind input stream
+     *
+     * @return void
+     */
+    public function rewind ()
+    {
+        if (rewind($this->handle) !== true) {
+            throw new RuntimeException('Unable to rewind input stream');
+        }
     }
 
     /**

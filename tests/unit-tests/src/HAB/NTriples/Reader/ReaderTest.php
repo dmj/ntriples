@@ -91,4 +91,20 @@ class ReaderTest extends TestCase
         $reader->close();
         $this->assertEquals(7, $count);
     }
+
+    public function testRewind ()
+    {
+        $reader = new Reader();
+        $reader->open(__DIR__ . '/testdata.nt');
+        $count = 0;
+        while ($triple = $reader->read()) {
+            $count++;
+        };
+        $this->assertEquals(7, $count);
+        $reader->rewind();
+        while ($triple = $reader->read()) {
+            $count++;
+        };
+        $this->assertEquals(14, $count);
+    }
 }
