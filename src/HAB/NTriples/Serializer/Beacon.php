@@ -36,12 +36,6 @@ use InvalidArgumentException;
  */
 class Beacon implements SerializerInterface, TripleSerializerInterface
 {
-    /**
-     * Named capture groups.
-     *
-     * @var array
-     */
-    private static $idTemplatePatterns = ['(?<ID>)', "(?'ID')", '(?P<ID>)'];
 
     /**
      * Relating property.
