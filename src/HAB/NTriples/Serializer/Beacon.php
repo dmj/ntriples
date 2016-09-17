@@ -78,11 +78,13 @@ class Beacon implements SerializerInterface, TripleSerializerInterface
      * @param  string $pattern
      * @return void
      */
-    public function __construct ($subjectPattern, $objectPrefix, $relatingProperty)
+    public function __construct ($subjectPattern, $objectPrefix, $relatingProperty = null)
     {
         $this->setSubjectPattern($subjectPattern);
         $this->setObjectPrefix($objectPrefix);
-        $this->setRelatingProperty($relatingProperty);
+        if ($relatingProperty) {
+            $this->setRelatingProperty($relatingProperty);
+        }
     }
 
     /**
