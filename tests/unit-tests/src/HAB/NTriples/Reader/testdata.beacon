@@ -1,0 +1,7 @@
+#FORMAT: BEACON
+#PREFIX: http://example.com/prefix/
+#TARGET: http://example.com/target/{ID}.html
+just-an-id
+id-and-hit|100
+id-and-hit-and-target|200|http://example.com
+id-and-target||http://example.com
