@@ -93,6 +93,8 @@ class RdfXml implements SerializerInterface
                                     $attr = sprintf('xml:lang="%s"', htmlspecialchars($language, ENT_QUOTES|ENT_XML1));
                                 } else if ($datatype = $value->getDatatype()) {
                                     $attr = sprintf('rdf:datatype="%s"', htmlspecialchars($datatype, ENT_QUOTES|ENT_XML1));
+                                } else {
+                                    $attr = null;
                                 }
                                 $buffer []= sprintf('<%s %s>%s</%s>', $qname, $attr, htmlspecialchars($value, ENT_QUOTES|ENT_XML1), $qname);
                             } else {
