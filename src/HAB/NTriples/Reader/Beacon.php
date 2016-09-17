@@ -23,6 +23,9 @@
 
 namespace HAB\NTriples\Reader;
 
+use HAB\NTriples\Literal;
+use HAB\NTriples\BNode;
+
 /**
  * Read triples for a BEACON file.
  *
@@ -32,6 +35,20 @@ namespace HAB\NTriples\Reader;
  */
 class Beacon
 {
+    /**
+     * Property indicating BEACON metadata.
+     *
+     * @var string
+     */
+    private static $beaconMetadataProperty = 'tag:diglib.hab.de,2016-09-17:beacon-metadata';
+
+    /**
+     * BEACON datadump class.
+     *
+     * @var string
+     */
+    private static $beaconDatadumpClass = 'tag:diglib.hab.de,2016-09-17:beacon-datadump';
+
     /**
      * Regular expression matching BEACON data.
      *
@@ -73,6 +90,21 @@ class Beacon
      * @var resource
      */
     private $handle;
+
+    /**
+     * Triple buffer.
+     *
+     * @var array
+     */
+    private $buffer;
+
+    /**
+     * URI of BEACON data.
+     *
+     * @var string
+     */
+    private $beaconUri;
+
     /**
      * Constructor.
      *
@@ -94,7 +126,11 @@ class Beacon
      */
     public function open ($uri)
     {
+        $this->beaconUri = $uri;
         $this->handle = fopen($uri, 'r');
+        $this->buffer = array();
+
+        array_push($this->buffer, array($this->beaconUri, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', self::$beaconDatadumpClass));
     }
 
     /**
@@ -108,17 +144,36 @@ class Beacon
     {
         $triple = false;
         while (empty($triple) and !feof($this->handle)) {
-            $line = trim(fgets($this->handle));
-            if ($line and $line[0] === '#') {
-                $this->handleHeaderLine($line);
-            } else if (preg_match(self::$beaconDataRe, $line, $match)) {
-                $id = $match['id'];
-                $hits = isset($match['hits']) ? $match['hits'] : null;
-                $target = isset($match['target']) ? $match['target'] : null;
-                $triple = $this->createTriple($id, $hits, $target);
+            if (empty($this->buffer)) {
+                $line = trim(fgets($this->handle));
+                if ($line and $line[0] === '#') {
+                    if ($triples = $this->handleHeaderLine($line)) {
+                        foreach ($triples as $triple) {
+                            array_push($this->buffer, $triple);
+                        }
+                        $triple = array_shift($this->buffer);
+                    }
+                } else if (preg_match(self::$beaconDataRe, $line, $match)) {
+                    $id = $match['id'];
+                    $hits = isset($match['hits']) ? $match['hits'] : null;
+                    $target = isset($match['target']) ? $match['target'] : null;
+                    $triple = $this->createTriple($id, $hits, $target);
+                }
+            } else {
+                $triple = array_shift($this->buffer);
             }
         }
         return $triple;
+    }
+
+    /**
+     * Close reader.
+     *
+     * @return void
+     */
+    public function close ()
+    {
+        fclose($this->handle);
     }
 
     /**
@@ -155,6 +210,12 @@ class Beacon
             if ($directive === 'TARGET') {
                 $this->subjectPattern = $value;
             }
+            $triples = array();
+            $bnode = new BNode();
+            $triples []= array($this->beaconUri, self::$beaconMetadataProperty, $bnode);
+            $triples []= array($bnode, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#value', new Literal($value));
+            $triples []= array($bnode, 'http://www.w3.org/2000/01/rdf-schema#label', new Literal($directive));
+            return $triples;
         }
     }
 

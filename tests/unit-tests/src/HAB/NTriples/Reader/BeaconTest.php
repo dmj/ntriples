@@ -41,7 +41,7 @@ class BeaconTest extends TestCase
         $reader->open(__DIR__ . '/testdata.beacon');
         while ($triple = $reader->read()) {
             list($s, $p, $o) = $triple;
-            $graph[$s] = $o;
+            $graph[(string)$s] = $o;
         }
         $this->assertEquals('http://example.com/prefix/just-an-id', $graph['http://example.com/target/just-an-id.html']);
         $this->assertEquals('http://example.com/prefix/id-and-hit', $graph['http://example.com/target/id-and-hit.html']);
