@@ -69,8 +69,8 @@ class TriX implements SerializerInterface, TripleSerializerInterface
     public function serializeTriple ($s, $p, $o)
     {
         $s = $this->pattern($s);
-        $p = $this->pattern($s);
-        $o = $this->pattern($s);
+        $p = $this->pattern($p);
+        $o = $this->pattern($o);
         if ($s and $p and $o) {
             return '<triple>' . $s . $p . $o . '</triple>';
         }
