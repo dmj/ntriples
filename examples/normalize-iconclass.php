@@ -33,7 +33,7 @@ $serializer = new HAB\NTriples\Serializer\NTriples();
 
 $outfile = fopen('php://stdout', 'wb');
 
-$reader->open('iconclass.nt');
+$reader->open(__DIR__ . '/iconclass.nt');
 $count = 0;
 while ($triple = $reader->read()) {
     list($s, $p, $o) = $triple;
