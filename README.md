@@ -77,8 +77,6 @@ A call to `close()` closes the reader.
 
 ### NTriples
 
-### Beacon
-
 ## Serializers
 
 ### NTriples
@@ -88,5 +86,3 @@ A call to `close()` closes the reader.
 ### TriX
 
 ### NQuads
-
-### Beacon
