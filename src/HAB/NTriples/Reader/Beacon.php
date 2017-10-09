@@ -26,14 +26,16 @@ namespace HAB\NTriples\Reader;
 use HAB\NTriples\Literal;
 use HAB\NTriples\BNode;
 
+use RuntimeException;
+
 /**
  * Read triples for a BEACON file.
  *
  * @author    David Maus <maus@hab.de>
- * @copyright (c) 2016 by Herzog August Bibliothek Wolfenbüttel
+ * @copyright (c) 2016,2017 by Herzog August Bibliothek Wolfenbüttel
  * @license   http://www.gnu.org/licenses/gpl.txt GNU General Public License v3 or higher
  */
-class Beacon
+class Beacon implements ReaderInterface
 {
     /**
      * Property indicating BEACON metadata.
@@ -119,10 +121,7 @@ class Beacon
     }
 
     /**
-     * Open reader to read from given URI.
-     *
-     * @param  string $uri
-     * @return void
+     * {@inheritDoc}
      */
     public function open ($uri)
     {
@@ -134,11 +133,7 @@ class Beacon
     }
 
     /**
-     * Read from handle and return triple.
-     *
-     * Returns false if the input stream is exhausted.
-     *
-     * @return array|false
+     * {@inheritDoc}
      */
     public function read ()
     {
@@ -167,9 +162,17 @@ class Beacon
     }
 
     /**
-     * Close reader.
-     *
-     * @return void
+     * {@inheritDoc}
+     */
+    public function rewind ()
+    {
+        if (rewind($this->handle) !== true) {
+            throw new RuntimeException('Unable to rewind input stream');
+        }
+    }
+
+    /**
+     * {@inheritDoc}
      */
     public function close ()
     {

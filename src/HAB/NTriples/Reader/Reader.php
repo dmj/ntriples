@@ -32,10 +32,10 @@ use RuntimeException;
  * NTriples reader.
  *
  * @author    David Maus <maus@hab.de>
- * @copyright (c) 2015 by Herzog August Bibliothek Wolfenbüttel
+ * @copyright (c) 2015-2017 by Herzog August Bibliothek Wolfenbüttel
  * @license   http://www.gnu.org/licenses/gpl.txt GNU General Public License v3 or higher
  */
-class Reader
+class Reader implements ReaderInterface
 {
     /**
      * File handle for read operation.
@@ -53,10 +53,7 @@ class Reader
 
 
     /**
-     * Open reader to read from given URI.
-     *
-     * @param  string $uri
-     * @return void
+     * {@inheritDoc}
      */
     public function open ($uri)
     {
@@ -65,11 +62,7 @@ class Reader
     }
 
     /**
-     * Read from handle and return triple.
-     *
-     * Returns false if the input stream is exhausted.
-     *
-     * @return array|false
+     * {@inheritDoc}
      */
     public function read ()
     {
@@ -119,9 +112,7 @@ class Reader
     }
 
     /**
-     * Close reader.
-     *
-     * @return void
+     * {@inheritDoc}
      */
     public function close ()
     {
@@ -129,11 +120,7 @@ class Reader
     }
 
     /**
-     * Rewind input stream.
-     *
-     * @throws RuntimeException Cannot rewind input stream
-     *
-     * @return void
+     * {@inheritDoc}
      */
     public function rewind ()
     {
