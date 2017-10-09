@@ -36,14 +36,14 @@ class ReaderTest extends TestCase
 {
     public function testTokenUri ()
     {
-        $reader = new Reader();
+        $reader = new NTriples();
         $this->assertNull($reader->token('<'));
         $this->assertEquals('http://example.com', $reader->token('<http://example.com>'));
     }
 
     public function testTokenBNode ()
     {
-        $reader = new Reader();
+        $reader = new NTriples();
         $token = $reader->token('_:bnode_12345');
         $this->assertInstanceOf('HAB\NTriples\BNode', $token);
         $this->assertSame($token, $reader->token('_:bnode_12345'));
@@ -52,7 +52,7 @@ class ReaderTest extends TestCase
 
     public function testTokenLiteralLanguage ()
     {
-        $reader = new Reader();
+        $reader = new NTriples();
         $token = $reader->token('" EXAMPLE \" EXAMPLE"@de');
         $this->assertInstanceOf('HAB\NTriples\Literal', $token);
         $this->assertEquals(' EXAMPLE " EXAMPLE', $token->getValue());
@@ -62,7 +62,7 @@ class ReaderTest extends TestCase
 
     public function testTokenLiteralDatatype ()
     {
-        $reader = new Reader();
+        $reader = new NTriples();
         $token = $reader->token('" EXAMPLE \" EXAMPLE"^^<http://example.com>');
         $this->assertInstanceOf('HAB\NTriples\Literal', $token);
         $this->assertEquals(' EXAMPLE " EXAMPLE', $token->getValue());
@@ -72,7 +72,7 @@ class ReaderTest extends TestCase
 
     public function testTokenLiteralSimple ()
     {
-        $reader = new Reader();
+        $reader = new NTriples();
         $token = $reader->token('" EXAMPLE \" EXAMPLE"');
         $this->assertInstanceOf('HAB\NTriples\Literal', $token);
         $this->assertEquals(' EXAMPLE " EXAMPLE', $token->getValue());
@@ -82,7 +82,7 @@ class ReaderTest extends TestCase
 
     public function testReader ()
     {
-        $reader = new Reader();
+        $reader = new NTriples();
         $reader->open(__DIR__ . '/testdata.nt');
         $count = 0;
         while ($triple = $reader->read()) {
@@ -94,7 +94,7 @@ class ReaderTest extends TestCase
 
     public function testRewind ()
     {
-        $reader = new Reader();
+        $reader = new NTriples();
         $reader->open(__DIR__ . '/testdata.nt');
         $count = 0;
         while ($triple = $reader->read()) {

@@ -28,7 +28,7 @@ function normalize_whitespace ($value) {
     return $normalized;
 }
 
-$reader = new HAB\NTriples\Reader\Reader();
+$reader = new HAB\NTriples\Reader\NTriples();
 $serializer = new HAB\NTriples\Serializer\NTriples();
 
 $outfile = fopen('php://stdout', 'wb');

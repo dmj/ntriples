@@ -35,7 +35,7 @@ use RuntimeException;
  * @copyright (c) 2015-2017 by Herzog August Bibliothek Wolfenbüttel
  * @license   http://www.gnu.org/licenses/gpl.txt GNU General Public License v3 or higher
  */
-class Reader implements ReaderInterface
+class NTriples implements ReaderInterface
 {
     /**
      * File handle for read operation.
