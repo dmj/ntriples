@@ -18,7 +18,7 @@ composer require hab/ntriples
 
 ### Triple
 
-a **triple** is represented as an array with subject, predicate and object as
+A **triple** is represented as an array with subject, predicate and object as
 members at the position 0, 1, and 2 respectively.
 
 ### URI
@@ -27,7 +27,7 @@ A **URI** is represented as a string.
 
 ### Literal
 
-a **literal** is represented as an instance of the `Literal` class. A Literal
+A **literal** is represented as an instance of the `Literal` class. A Literal
 has a value and can have an optional datatype or language tag.
 
 ```
@@ -39,7 +39,7 @@ echo $literal->getLanguage();
 
 ### Blank Node
 
-a **blank node** is represented as an instance of the `BNode` class. If
+A **blank node** is represented as an instance of the `BNode` class. If
 coerced to a string it returns a unique node label.
 
 ```
@@ -75,14 +75,23 @@ thrown if the source does not support rewinding
 
 A call to `close()` closes the reader.
 
-### NTriples
+The following source formats are currently supported:
+
+| Format | Reader |
+| --- | --- |
+| [NTriples](https://www.w3.org/TR/n-triples/) | `HAB\NTriples\Reader\NTriples` |
 
 ## Serializers
 
-### NTriples
+All Serializers adhere to the same interface. You call `serialize()`
+with an arbitrary number of `Graph` instances. The serializer returns
+a string containing the serialized graphs.
 
-### RDF/XML
+The following serialization formats are currently supported:
 
-### TriX
-
-### NQuads
+| Format | Serializer |
+| --- | --- |
+| [NTriples](https://www.w3.org/TR/n-triples/) | `HAB\NTriples\Serializer\NTriples` |
+| [NQuads](https://www.w3.org/TR/n-quads/) | `HAB\NTriples\Serializer\NQuads` |
+| [RDF/XML](https://www.w3.org/TR/rdf-syntax-grammar/) | `HAB\NTriples\Serializer\RdfXml` |
+| [TriX](http://www.hpl.hp.com/techreports/2003/HPL-2003-268.pdf) | `HAB\NTriples\Serializer\TriX` |
