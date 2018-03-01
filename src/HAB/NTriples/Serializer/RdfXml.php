@@ -119,7 +119,7 @@ class RdfXml implements SerializerInterface
      */
     public function addNamespaceDecl ($namespaceUri, $prefix)
     {
-        $this->namespaceDeclMapDefault[$namespace] = $prefix;
+        $this->namespaceDeclMapDefault[$namespaceUri] = $prefix;
     }
 
 
